@@ -5,11 +5,11 @@
 
 # LiDAR Processing
 
-## Fast and Accurate Computation of Surface Normals from Range Images 
+#### Fast and Accurate Computation of Surface Normals from Range Images 
 - Language: MATLAB 
 - Code : NormalEstimation_Badino2011 
 
-## Efficient Velodyne SLAM with point and plane features 
+#### Efficient Velodyne SLAM with point and plane features 
 - Language: MATLAB 
 - Code : PlaneDetection_Grant2013 
  
