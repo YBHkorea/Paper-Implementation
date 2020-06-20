@@ -9,9 +9,9 @@ https://sites.google.com/view/visionprogrammer/github
 
 # LiDAR Processing
 
-#### Fast and Accurate Computation of Surface Normals from Range Images 
+#### Uncertainty analysis for optimum plane extraction from noisy 3D range-sensor point-clouds
 - Language: MATLAB 
-- Code: Normal Estimation_Badino2011 
+- Code: Plane Analysis_Pathak2010
 
 #### Finding planes in LiDAR point clouds for real-time registration
 - Language: MATLAB 
