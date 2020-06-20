@@ -7,13 +7,21 @@
 
 #### Fast and Accurate Computation of Surface Normals from Range Images 
 - Language: MATLAB 
-- Code : NormalEstimation_Badino2011 
+- Code: NormalEstimation_Badino2011 
 
 #### Efficient Velodyne SLAM with point and plane features 
 - Language: MATLAB 
-- Code : PlaneDetection_Grant2013 
+- Code: PlaneDetection_Grant2013 
  
 # Image Processing
 
 
 # Multimodal Processing
+
+#### Automatic Camera and Range Sensor Calibration using a single Shot
+  - Language: MATLAB
+  - Code: 
+
+#### Line-based extrinsic calibration of range and image sensors
+  - Language: MATLAB
+  - Code: 
