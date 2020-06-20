@@ -13,7 +13,7 @@ https://sites.google.com/view/visionprogrammer/github
 - Language: MATLAB 
 - Code: Normal Estimation_Badino2011 
 
-#### Efficient Velodyne SLAM with point and plane features 
+#### Finding planes in LiDAR point clouds for real-time registration
 - Language: MATLAB 
 - Code: Plane Detection_Grant2013 
  
@@ -21,7 +21,7 @@ https://sites.google.com/view/visionprogrammer/github
 - Language: MATLAB
 - Code: LIDAR SLAM_Grant2018
  
-#### Efficient Velodyne SLAM with point and plane features
+#### Fast and accurate computation of surface normals from range images
 - Language: MATLAB
 - Code: Normal Estimation_Badino2011
  
