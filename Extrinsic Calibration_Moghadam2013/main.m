@@ -1,6 +1,8 @@
-%% abstract
-%paper : Line-based Extrinsic Calibration of Range and Image Sensors(2013)
-% this code made by Byung-Hyun Yoon
+% --------------------------------------
+% Paper: Line-based Extrinsic Calibration of Range and Image Sensors(2013) - Implementation
+% made by Byung-Hyun Yoon
+% date : 2020-05-01
+% --------------------------------------
 
 clear; clc; restoredefaultpath;
 rng(1);

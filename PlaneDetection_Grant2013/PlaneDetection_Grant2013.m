@@ -1,9 +1,8 @@
 function [Planes_result] = PlaneDetection_Grant2013(pc, n_channel)
 % --------------------------------------
 % Paper: Finding Planes in LiDAR Point Clouds for Real-Time Registration(2013) - Implementation
-% https://github.com/YBHkorea/LiDAR-processing/tree/master/LiDARregistration-2013-Finding%20Planes%20in%20LiDAR%20Point%20Clouds%20for%20Real-Time%20Registration
 % made by Byung-Hyun Yoon
-% data : 2020-06-04
+% date : 2020-06-04
 % --------------------------------------
 
 debug = false;

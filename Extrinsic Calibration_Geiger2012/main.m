@@ -1,5 +1,8 @@
-% paper : Automatic Camera and Range Sensor Calibration using a single shot(2012)
-% this code made by Byung-Hyun Yoon
+% --------------------------------------
+% Paper: Automatic Camera and Range Sensor Calibration using a single shot(2012) - Implementation
+% made by Byung-Hyun Yoon
+% date : 2020-05-04
+% --------------------------------------
 
 load('dataset.mat');
 
