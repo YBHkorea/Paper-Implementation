@@ -1,8 +1,9 @@
 function [Planes_result] = PlaneDetection_Grant2013(pc, n_channel)
 % --------------------------------------
 % Paper: Finding Planes in LiDAR Point Clouds for Real-Time Registration(2013) - Implementation
+% https://github.com/YBHkorea/LiDAR-processing/tree/master/LiDARregistration-2013-Finding%20Planes%20in%20LiDAR%20Point%20Clouds%20for%20Real-Time%20Registration
 % made by Byung-Hyun Yoon
-% date : 2020-06-04
+% data : 2020-06-04
 % --------------------------------------
 
 debug = false;
@@ -243,117 +244,113 @@ for j = 1 : size(segments, 2)
                 Accumulator_Group{round(Theta/2), round(Phi/4), rho_cnt} = [Accumulator_Group{round(Theta/2), round(Phi/4), rho_cnt}; j];
             end
         end
+    end
+    
+    %% compensate perturbation error (in the paper)
+    rho_cnt2 = 0;
+    starting_flag = false;
+    for rho2_ = rho
+        rho_cnt2 = rho_cnt2 + 1;
         
-        %% compensate perturbation error (in the paper)
-        rho_cnt2 = 0;
-        starting_flag = false;
-        for rho2_ = rho
-            rho_cnt2 = rho_cnt2 + 1;
-            
-            cos_omega = rho2_ / norm(segments(j).centroid);
-            
-            c_vector = - segments(j).centroid ./ norm(segments(j).centroid);
-            v_vector = segments(j).v3 ./ norm(segments(j).v3);
-            
-            
-            alpha = c_vector(2) * v_vector(1) - c_vector(1) * v_vector(2);
-            beta = c_vector(1) * v_vector(1) + c_vector(1) * v_vector(1);
-            gamma = c_vector(3) * v_vector(3) - cos_omega;
-            
-            %solution for cos(eta)
-            %quadratic equation solution (8, 9)
-            A = alpha^2 + beta^2;
-            B = -2 * beta * gamma;
-            C = gamma^2 - alpha^2;
-            
-            if (B^2 - 4 * A * C < 0)
-                continue;
-            end
-            
-            cos_eta_1 = (-B + sqrt(B^2 - 4 * A * C)) / (2 * A);
-            cos_eta_2 = (-B - sqrt(B^2 - 4 * A * C)) / (2 * A);
-            
-            if ( abs(cos_eta_1) > 1 ) || ( abs(cos_eta_2) > 1 )
-                if (starting_flag == true)
-                    break;
-                end
-                continue;
-            end
-            
-            eta1 = acos(cos_eta_1) / pi * 180;
-            eta2 = 360 - eta1;
-            eta3 = acos(cos_eta_2) / pi * 180;
-            eta4 = 360 - eta3;
-            
-            eta = [eta1 eta2 eta3 eta4];
-            for e = eta
-                if abs(e) > 2
-                    continue;
-                end
-                starting_flag = true;
-                
-                %eq. (2, 3)
-                v3R = [cos(e) -sin(e) 0; sin(e) cos(e) 0; 0 0 1] * segments(j).v3;
-                A = [segments(j).centroid; v3R'];
-                Ap = pinv(A);
-                
-                b = [-rho2_; 0];
-                
-                j_vector = null(A);
-                k_vector = Ap * b;
-                
-                %quadratic equation solution (5, 6)
-                % 0 = X alpha^2 + Y alpha + Z
-                X = sum(j_vector.^2);
-                Y = 2 * (j_vector' * k_vector);
-                Z = sum(k_vector.^2) - 1;
-                
-                if (Y^2 - 4 * X * Z >= 0)
-                    alpha1 = (-Y + sqrt(Y^2 - 4 * X * Z)) / (2 * X);
-                    alpha2 = (-Y - sqrt(Y^2 - 4 * X * Z)) / (2 * X);
-                    
-                    normal1 = alpha1 * j_vector + k_vector;
-                    normal2 = alpha2 * j_vector + k_vector;
-                    for normal = [normal1 normal2]
-                        
-                        Phi = acos(normal(3));
-                        Theta = asin( normal(2)/sin(Phi) ) / pi * 180;
-                        Phi = Phi / pi * 180; %rad to degree
-                        
-                        if Phi < 0
-                            Phi = Phi + 360;
-                        end
-                        if Phi > 360
-                            Phi = Phi - 360;
-                        end
-                        if Theta < 0
-                            Theta = Theta + 360;
-                        end
-                        if Theta > 360
-                            Theta = Theta - 360;
-                        end
-                        
-                        if((Phi/4) < 0.5)
-                            Phi = 360;
-                        end
-                        if((Theta/2) < 0.5)
-                            Theta = 360;
-                        end
-                        
-                        %eq. (7)
-                        voting_weight = segments(j).curvature * (1 - (1 - (segments(j).v1' * normal)^2)^3) + ...
-                            (1 - segments(j).curvature) * ( segments(j).curvature * ( segments(j).v1' * normal ) + 0.85 - segments(j).curvature);
-                        Accumulator_Array(round(Theta/2), round(Phi/4), rho_cnt2) = Accumulator_Array(round(Theta/2), round(Phi/4), rho_cnt2) + voting_weight;
-                        Accumulator_Counter(round(Theta/2), round(Phi/4), rho_cnt2) = Accumulator_Counter(round(Theta/2), round(Phi/4), rho_cnt2) + 1;
-                        Accumulator_Group{round(Theta/2), round(Phi/4), rho_cnt2} = [Accumulator_Group{round(Theta/2), round(Phi/4), rho_cnt2}; j];
-                    end
-                end
-                
-            end
-            
+        cos_omega = rho2_ / norm(segments(j).centroid);
+        
+        c_vector = - segments(j).centroid ./ norm(segments(j).centroid);
+        v_vector = segments(j).v3 ./ norm(segments(j).v3);
+        
+        
+        alpha = c_vector(2) * v_vector(1) - c_vector(1) * v_vector(2);
+        beta = c_vector(1) * v_vector(1) + c_vector(1) * v_vector(1);
+        gamma = c_vector(3) * v_vector(3) - cos_omega;
+        
+        %solution for cos(eta)
+        %quadratic equation solution (8, 9)
+        A = alpha^2 + beta^2;
+        B = -2 * beta * gamma;
+        C = gamma^2 - alpha^2;
+        
+        if (B^2 - 4 * A * C < 0)
+            continue;
         end
         
+        cos_eta_1 = (-B + sqrt(B^2 - 4 * A * C)) / (2 * A);
+        cos_eta_2 = (-B - sqrt(B^2 - 4 * A * C)) / (2 * A);
         
+        if ( abs(cos_eta_1) > 1 ) || ( abs(cos_eta_2) > 1 )
+            if (starting_flag == true)
+                break;
+            end
+            continue;
+        end
+        
+        eta1 = acos(cos_eta_1) / pi * 180;
+        eta2 = 360 - eta1;
+        eta3 = acos(cos_eta_2) / pi * 180;
+        eta4 = 360 - eta3;
+        
+        eta = [eta1 eta2 eta3 eta4];
+        for e = eta
+            if abs(e) > 2
+                continue;
+            end
+            starting_flag = true;
+            
+            %eq. (2, 3)
+            v3R = [cos(e) -sin(e) 0; sin(e) cos(e) 0; 0 0 1] * segments(j).v3;
+            A = [segments(j).centroid; v3R'];
+            Ap = pinv(A);
+            
+            b = [-rho2_; 0];
+            
+            j_vector = null(A);
+            k_vector = Ap * b;
+            
+            %quadratic equation solution (5, 6)
+            % 0 = X alpha^2 + Y alpha + Z
+            X = sum(j_vector.^2);
+            Y = 2 * (j_vector' * k_vector);
+            Z = sum(k_vector.^2) - 1;
+            
+            if (Y^2 - 4 * X * Z >= 0)
+                alpha1 = (-Y + sqrt(Y^2 - 4 * X * Z)) / (2 * X);
+                alpha2 = (-Y - sqrt(Y^2 - 4 * X * Z)) / (2 * X);
+                
+                normal1 = alpha1 * j_vector + k_vector;
+                normal2 = alpha2 * j_vector + k_vector;
+                for normal = [normal1 normal2]
+                    
+                    Phi = acos(normal(3));
+                    Theta = asin( normal(2)/sin(Phi) ) / pi * 180;
+                    Phi = Phi / pi * 180; %rad to degree
+                    
+                    if Phi < 0
+                        Phi = Phi + 360;
+                    end
+                    if Phi > 360
+                        Phi = Phi - 360;
+                    end
+                    if Theta < 0
+                        Theta = Theta + 360;
+                    end
+                    if Theta > 360
+                        Theta = Theta - 360;
+                    end
+                    
+                    if((Phi/4) < 0.5)
+                        Phi = 360;
+                    end
+                    if((Theta/2) < 0.5)
+                        Theta = 360;
+                    end
+                    
+                    %eq. (7)
+                    voting_weight = segments(j).curvature * (1 - (1 - (segments(j).v1' * normal)^2)^3) + ...
+                        (1 - segments(j).curvature) * ( segments(j).curvature * ( segments(j).v1' * normal ) + 0.85 - segments(j).curvature);
+                    Accumulator_Array(round(Theta/2), round(Phi/4), rho_cnt2) = Accumulator_Array(round(Theta/2), round(Phi/4), rho_cnt2) + voting_weight;
+                    Accumulator_Counter(round(Theta/2), round(Phi/4), rho_cnt2) = Accumulator_Counter(round(Theta/2), round(Phi/4), rho_cnt2) + 1;
+                    Accumulator_Group{round(Theta/2), round(Phi/4), rho_cnt2} = [Accumulator_Group{round(Theta/2), round(Phi/4), rho_cnt2}; j];
+                end
+            end
+        end
     end
 end
 
@@ -363,8 +360,6 @@ t_a =  1.0;
 t_split = 0.9;
 N_split = 2;
 t_merge = 0.9;
-t_dist = 0.02; % 2cm
-t_dot = 0.5;
 
 % (page 10)
 % by keeping all bins which pass some value, t_a, and discarding the
@@ -511,6 +506,18 @@ for j = 1 : numel(Planes_remain)
     idx = find(graph(j, :));
     for k = idx
         Planes_result(pcnt).points = [Planes_result(pcnt).points; segments(k).points];
+    end
+    
+    centroid = mean(Planes_result(pcnt).points);
+    
+    [coeff, ~, ~] = pca(Planes_result(pcnt).points);
+    
+    Planes_result(pcnt).normal = coeff(1:3, 3);
+    Planes_result(pcnt).distance = centroid * coeff(1:3, 3);
+    
+    if Planes_result(pcnt).distance < 0
+        Planes_result(pcnt).normal = - coeff(1:3, 3);
+        Planes_result(pcnt).distance = centroid * (-coeff(1:3, 3));
     end
 end
 
